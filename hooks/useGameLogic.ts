@@ -1306,7 +1306,7 @@ export const useGameLogic = () => {
                           commentary: `Umpan terobosan berbahaya menuju gawang ${defender.nickname}!`
                       }
                   });
-              }, 2000);
+              }, 3000); // Increased from 2000 to 3000
 
               // Trigger Question (Attack)
               setTimeout(() => {
@@ -1345,7 +1345,7 @@ export const useGameLogic = () => {
                         const movie = getNextMovie();
                         dispatch({ type: 'SET_KNOCKOUT_ZONA_FILM', payload: { movie } });
                     }
-              }, 4000);
+              }, 6000); // Increased from 4000 to 6000 (total delay from start)
           }
       }
       
@@ -1407,9 +1407,9 @@ export const useGameLogic = () => {
                         const movie = getNextMovie();
                         dispatch({ type: 'SET_KNOCKOUT_ZONA_FILM', payload: { movie } });
                     }
-               }, 2500);
+               }, 4000); // Increased from 2500 to 4000 (after counter start)
 
-          }, 2000); // 2s delay showing "Save" state
+          }, 3000); // Increased delay from 2000 to 3000 showing "Save" state
           return () => clearTimeout(timer);
       }
 
@@ -1438,7 +1438,7 @@ export const useGameLogic = () => {
               }
            });
         }
-      }, 4000); // Delay to celebrate goal
+      }, 5000); // Increased from 4000 to 5000 to celebrate goal
 
       return () => clearTimeout(timeoutId);
     }

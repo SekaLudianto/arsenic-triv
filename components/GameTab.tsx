@@ -5,7 +5,7 @@ import { TOTAL_ROUNDS, ROUND_TIMER_SECONDS, KNOCKOUT_ROUND_TIMER_SECONDS, KNOCKO
 // FIX: Import LetterObject from types.ts instead of defining it locally.
 import { GameMode, GameStyle, LetterObject, LeaderboardEntry, KnockoutPlayer, FootballState } from '../types';
 import { InternalGameState } from '../hooks/useGameLogic';
-import { ServerIcon, HeartIcon, GiftIcon, InfoIcon } from './IconComponents';
+import { ServerIcon, HeartIcon, GiftIcon, InfoIcon, ShieldCheckIcon, AlertTriangleIcon } from './IconComponents';
 
 // FIX: Removed local definition of LetterObject as it's now imported from types.ts.
 
@@ -163,6 +163,9 @@ const FootballField: React.FC<{
         ballAnimation.left = isLeftGoal ? '30%' : '70%'; // Bounce out
     }
 
+    const isP1Defender = footballState.defenderId === player1.userId;
+    const isP2Defender = footballState.defenderId === player2.userId;
+
     return (
         <div className="relative w-full h-56 bg-[#4CA058] overflow-hidden border-b-4 border-white/20 shadow-inner flex flex-col justify-center select-none shrink-0">
             {/* Grass Pattern Stripes (Vertical stripes like standard pitch) */}
@@ -255,22 +258,38 @@ const FootballField: React.FC<{
 
             {/* Players (Tokens) */}
             <motion.div 
-                className="absolute top-1/2 -translate-y-1/2 z-20 flex flex-col items-center gap-1"
+                className={`absolute top-1/2 -translate-y-1/2 z-20 flex flex-col items-center gap-1 transition-opacity duration-300 ${isRoundActive && !isP1Defender ? 'opacity-40 scale-90' : 'opacity-100 scale-100'}`}
                 animate={{ left: '15%' }} 
                 transition={{ type: "spring", stiffness: 100 }}
             >
-                <div className={`w-10 h-10 rounded-full border-2 ${footballState.attackerId === player1.userId ? 'border-yellow-400 ring-2 ring-yellow-400/50' : 'border-red-500'} bg-white overflow-hidden relative shadow-lg`}>
+                {isRoundActive && isP1Defender && (
+                    <motion.div 
+                        initial={{ scale: 0 }} animate={{ scale: 1 }}
+                        className="bg-red-600 text-white text-[8px] font-black px-1.5 py-0.5 rounded shadow-sm border border-white mb-0.5 animate-pulse"
+                    >
+                        DEFEND!
+                    </motion.div>
+                )}
+                <div className={`w-10 h-10 rounded-full border-2 ${footballState.attackerId === player1.userId ? 'border-yellow-400 ring-2 ring-yellow-400/50' : 'border-red-500'} bg-white overflow-hidden relative shadow-lg ${isRoundActive && isP1Defender ? 'ring-4 ring-red-500/60 shadow-red-500/50' : ''}`}>
                     <img src={player1.profilePictureUrl} alt={player1.nickname} className="w-full h-full object-cover" />
                 </div>
                 <span className="text-[9px] bg-black/60 text-white px-1.5 py-0.5 rounded-full truncate max-w-[70px] shadow-sm font-semibold border border-white/20">{player1.nickname}</span>
             </motion.div>
 
             <motion.div 
-                className="absolute top-1/2 -translate-y-1/2 z-20 flex flex-col items-center gap-1"
+                className={`absolute top-1/2 -translate-y-1/2 z-20 flex flex-col items-center gap-1 transition-opacity duration-300 ${isRoundActive && !isP2Defender ? 'opacity-40 scale-90' : 'opacity-100 scale-100'}`}
                 animate={{ right: '15%' }}
                 transition={{ type: "spring", stiffness: 100 }}
             >
-                <div className={`w-10 h-10 rounded-full border-2 ${footballState.attackerId === player2.userId ? 'border-yellow-400 ring-2 ring-yellow-400/50' : 'border-blue-500'} bg-white overflow-hidden relative shadow-lg`}>
+                {isRoundActive && isP2Defender && (
+                    <motion.div 
+                        initial={{ scale: 0 }} animate={{ scale: 1 }}
+                        className="bg-red-600 text-white text-[8px] font-black px-1.5 py-0.5 rounded shadow-sm border border-white mb-0.5 animate-pulse"
+                    >
+                        DEFEND!
+                    </motion.div>
+                )}
+                <div className={`w-10 h-10 rounded-full border-2 ${footballState.attackerId === player2.userId ? 'border-yellow-400 ring-2 ring-yellow-400/50' : 'border-blue-500'} bg-white overflow-hidden relative shadow-lg ${isRoundActive && isP2Defender ? 'ring-4 ring-red-500/60 shadow-red-500/50' : ''}`}>
                     <img src={player2.profilePictureUrl} alt={player2.nickname} className="w-full h-full object-cover" />
                 </div>
                 <span className="text-[9px] bg-black/60 text-white px-1.5 py-0.5 rounded-full truncate max-w-[70px] shadow-sm font-semibold border border-white/20">{player2.nickname}</span>
@@ -327,13 +346,19 @@ const ActiveQuestionDisplay: React.FC<{ gameState: InternalGameState }> = ({ gam
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute inset-0 z-50 flex flex-col items-center justify-center p-3 text-center bg-black/85 backdrop-blur-[2px] select-none"
+            className="absolute inset-0 z-50 flex flex-col items-center justify-center p-3 text-center bg-black/90 backdrop-blur-[2px] select-none"
         >
-            <div className="absolute top-2 left-1/2 -translate-x-1/2 bg-red-600 text-white px-4 py-1 rounded-full text-[10px] font-bold animate-pulse shadow-lg border border-red-400 uppercase tracking-wider z-50">
-                PENYELAMATAN! {defender?.nickname}
+            <div className="absolute top-4 left-0 right-0 z-50 flex flex-col items-center">
+                <div className="bg-red-600 text-white px-6 py-2 rounded-full border-4 border-white shadow-2xl animate-pulse flex items-center gap-2 max-w-[90%]">
+                    <ShieldCheckIcon className="w-6 h-6 shrink-0" />
+                    <span className="text-lg sm:text-xl font-black tracking-wider uppercase truncate">GILIRAN: {defender?.nickname}</span>
+                </div>
+                <div className="bg-black/60 text-white text-[10px] sm:text-xs mt-1 px-3 py-0.5 rounded-full border border-white/30 backdrop-blur-sm">
+                    ⚠️ HANYA {defender?.nickname} YANG BOLEH MENJAWAB! ⚠️
+                </div>
             </div>
 
-            <div className="w-full flex flex-col items-center justify-center h-full gap-2">
+            <div className="w-full flex flex-col items-center justify-center h-full gap-2 mt-8">
                 {gameMode === GameMode.GuessTheFlag && currentCountry && (
                     <>
                         <h3 className="text-xs font-bold text-gray-300 uppercase tracking-widest mb-1">Tebak Negara</h3>
@@ -732,12 +757,18 @@ const GameTab: React.FC<GameTabProps> = ({ gameState, serverTime, gifterLeaderbo
 
 
         {gameStyle === GameStyle.Knockout && gameState.isRoundActive && (
-             <div className="mt-2 p-1.5 w-full max-w-xs bg-yellow-100 border border-yellow-300 dark:bg-yellow-500/10 dark:border-yellow-500/30 rounded-lg text-center z-10 shrink-0">
-                <p className="text-[10px] font-bold text-yellow-800 dark:text-yellow-300 uppercase">WAJIB DIJAWAB OLEH:</p>
-                <p className="text-sm font-bold text-red-600 dark:text-red-400 animate-pulse">
-                    {knockoutPlayers.find(p => p.userId === footballState.defenderId)?.nickname || '...'}
-                </p>
-            </div>
+             <motion.div 
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                className="mt-2 w-full bg-red-600 rounded-lg shadow-lg flex items-center justify-center p-2 gap-2 z-10 shrink-0 border-2 border-red-400"
+             >
+                <AlertTriangleIcon className="w-5 h-5 text-yellow-300 animate-pulse" />
+                <div className="flex flex-col text-center text-white">
+                    <span className="text-[10px] font-bold uppercase tracking-widest opacity-90">TUGAS MENJAWAB</span>
+                    <span className="text-sm font-black uppercase tracking-wide leading-none">{knockoutPlayers.find(p => p.userId === footballState.defenderId)?.nickname || '...'}</span>
+                </div>
+                <AlertTriangleIcon className="w-5 h-5 text-yellow-300 animate-pulse" />
+            </motion.div>
         )}
 
         <div className="mt-2 w-full text-center shrink-0">
