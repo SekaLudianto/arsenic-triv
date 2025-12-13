@@ -346,49 +346,56 @@ const ActiveQuestionDisplay: React.FC<{ gameState: InternalGameState }> = ({ gam
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute inset-0 z-50 flex flex-col items-center justify-center p-3 text-center bg-black/90 backdrop-blur-[2px] select-none"
+            className="absolute inset-0 z-50 flex flex-col bg-black/85 backdrop-blur-sm p-2 select-none"
         >
-            <div className="absolute top-4 left-0 right-0 z-50 flex flex-col items-center">
-                <div className="bg-red-600 text-white px-6 py-2 rounded-full border-4 border-white shadow-2xl animate-pulse flex items-center gap-2 max-w-[90%]">
+            {/* Header: Turn Indicator (Top, Fixed) */}
+            <div className="w-full flex flex-col items-center gap-2 pt-2 shrink-0 z-50">
+                <div className="bg-red-600 text-white px-6 py-2 rounded-full border-4 border-white shadow-2xl animate-pulse flex items-center gap-2 max-w-[95%]">
                     <ShieldCheckIcon className="w-6 h-6 shrink-0" />
                     <span className="text-lg sm:text-xl font-black tracking-wider uppercase truncate">GILIRAN: {defender?.nickname}</span>
                 </div>
-                <div className="bg-black/60 text-white text-[10px] sm:text-xs mt-1 px-3 py-0.5 rounded-full border border-white/30 backdrop-blur-sm">
+                <div className="bg-black/60 text-white text-[10px] sm:text-xs px-3 py-0.5 rounded-full border border-white/30 backdrop-blur-sm">
                     ⚠️ HANYA {defender?.nickname} YANG BOLEH MENJAWAB! ⚠️
                 </div>
             </div>
 
-            <div className="w-full flex flex-col items-center justify-center h-full gap-2 mt-8">
-                {gameMode === GameMode.GuessTheFlag && currentCountry && (
-                    <>
-                        <h3 className="text-xs font-bold text-gray-300 uppercase tracking-widest mb-1">Tebak Negara</h3>
-                        <img src={`https://flagcdn.com/w160/${currentCountry.code}.png`} alt="Flag" className="h-16 w-auto shadow-2xl rounded border-2 border-white/50 mb-2" />
-                        <ScrambledWordDisplay scrambledWord={scrambledWord} isRoundActive={true} isHardMode={false} revealLevel={0} />
-                    </>
-                )}
-                
-                {(gameMode === GameMode.Trivia || gameMode === GameMode.KpopTrivia || gameMode === GameMode.TriviaBola) && currentTriviaQuestion && (
-                    <>
-                        <div className="bg-white/10 p-3 rounded-lg border border-white/20 w-full max-w-xs mb-2">
-                            <h3 className="text-sm font-bold text-white leading-snug">{currentTriviaQuestion.question}</h3>
-                        </div>
-                        <ScrambledWordDisplay scrambledWord={scrambledWord} isRoundActive={true} isHardMode={false} revealLevel={0} />
-                    </>
-                )}
+            {/* Content: Question Box (Center, Flex Grow) */}
+            <div className="flex-grow flex flex-col items-center justify-center w-full relative z-40 pb-4">
+                <div className="bg-slate-900/80 border-2 border-sky-500/50 rounded-xl p-4 w-[95%] max-w-sm flex flex-col items-center gap-4 shadow-2xl backdrop-blur-md">
+                    {gameMode === GameMode.GuessTheFlag && currentCountry && (
+                        <>
+                            <h3 className="text-sm font-bold text-gray-300 uppercase tracking-widest border-b border-gray-600 pb-1 w-full text-center">Tebak Negara</h3>
+                            <div className="bg-white p-1 rounded">
+                                <img src={`https://flagcdn.com/w160/${currentCountry.code}.png`} alt="Flag" className="h-20 w-auto shadow-md" />
+                            </div>
+                            <ScrambledWordDisplay scrambledWord={scrambledWord} isRoundActive={true} isHardMode={false} revealLevel={0} />
+                        </>
+                    )}
+                    
+                    {(gameMode === GameMode.Trivia || gameMode === GameMode.KpopTrivia || gameMode === GameMode.TriviaBola) && currentTriviaQuestion && (
+                        <>
+                            <div className="w-full text-center">
+                                <h3 className="text-base sm:text-lg font-bold text-white leading-snug">{currentTriviaQuestion.question}</h3>
+                            </div>
+                            <div className="w-full h-px bg-white/20 my-1"></div>
+                            <ScrambledWordDisplay scrambledWord={scrambledWord} isRoundActive={true} isHardMode={false} revealLevel={0} />
+                        </>
+                    )}
 
-                {(gameMode === GameMode.GuessTheWord || gameMode === GameMode.GuessTheFruit || gameMode === GameMode.GuessTheAnimal || gameMode === GameMode.ZonaFilm) && currentWord && (
-                    <>
-                        <h3 className="text-sm font-bold text-gray-300 uppercase tracking-widest mb-2">Tebak {currentWordCategory}</h3>
-                        <ScrambledWordDisplay scrambledWord={scrambledWord} isRoundActive={true} isHardMode={false} revealLevel={0} />
-                    </>
-                )}
-                
-                {gameMode === GameMode.ZonaBola && (
-                    <>
-                        <h3 className="text-sm font-bold text-gray-300 uppercase tracking-widest mb-2">Tebak {currentWordCategory}</h3>
-                        <ScrambledWordDisplay scrambledWord={scrambledWord} isRoundActive={true} isHardMode={false} revealLevel={0} />
-                    </>
-                )}
+                    {(gameMode === GameMode.GuessTheWord || gameMode === GameMode.GuessTheFruit || gameMode === GameMode.GuessTheAnimal || gameMode === GameMode.ZonaFilm) && currentWord && (
+                        <>
+                            <h3 className="text-sm font-bold text-gray-300 uppercase tracking-widest border-b border-gray-600 pb-1 w-full text-center">Tebak {currentWordCategory}</h3>
+                            <ScrambledWordDisplay scrambledWord={scrambledWord} isRoundActive={true} isHardMode={false} revealLevel={0} />
+                        </>
+                    )}
+                    
+                    {gameMode === GameMode.ZonaBola && (
+                        <>
+                            <h3 className="text-sm font-bold text-gray-300 uppercase tracking-widest border-b border-gray-600 pb-1 w-full text-center">Tebak {currentWordCategory}</h3>
+                            <ScrambledWordDisplay scrambledWord={scrambledWord} isRoundActive={true} isHardMode={false} revealLevel={0} />
+                        </>
+                    )}
+                </div>
             </div>
         </motion.div>
     );
