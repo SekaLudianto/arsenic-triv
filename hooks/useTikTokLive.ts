@@ -163,7 +163,7 @@ export const useTikTokLive = (
   };
 
   const connectToIndoFinityWS = () => {
-    const ws = new WebSocket('ws://127.0.0.1:3000');
+    const ws = new WebSocket('ws://localhost:3000');
     connectionRef.current = ws;
 
     ws.onopen = () => {
